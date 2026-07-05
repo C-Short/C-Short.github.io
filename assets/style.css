@@ -1,0 +1,151 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Design tokens
+   Palette: "light blueprint" — pale blue-tinted paper, deep navy ink, two
+   accents (transit blue, warm orange). Green is reserved for the map itself
+   (transit / grocery / overlap legend) rather than used in site chrome.
+───────────────────────────────────────────────────────────────────────── */
+:root {
+  --bg:         #eef2f6;
+  --surface:    #ffffff;
+  --surface-2:  #e4eaf1;
+  --line:       #d3deea;
+  --ink:        #132840;
+  --ink-dim:    #46607a;
+  --muted:      #7188a0;
+
+  --cta:        #3e7cb1;
+  --ov:         #d9723d;
+  --groc:       #2ea04a;
+
+  --display: 'Space Grotesk', system-ui, sans-serif;
+  --body:    'Source Serif 4', Georgia, serif;
+  --mono:    'JetBrains Mono', 'Fira Mono', monospace;
+
+  --radius: 3px;
+  --max-w: 920px;
+}
+
+* , *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; }
+
+::selection { background: var(--cta); color: #fff; }
+
+/* ── Layout helpers ─────────────────────────────────────────────────────── */
+.wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* ── Nav ──────────────────────────────────────────────────────────────── */
+.site-nav {
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.site-nav .wrap {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.brand {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.brand .dot {
+  color: var(--cta);
+}
+
+.nav-links {
+  display: flex;
+  gap: 22px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--ink-dim);
+  transition: color 0.15s;
+}
+
+.nav-links a:hover { color: var(--ink); }
+
+/* ── Headings ─────────────────────────────────────────────────────────── */
+h1, h2, h3 {
+  font-family: var(--display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── Focus & motion ───────────────────────────────────────────────────── */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--cta);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid var(--line);
+  padding: 32px 0 56px;
+  margin-top: 80px;
+}
+
+.site-footer .wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.site-footer p {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.site-footer .links {
+  display: flex;
+  gap: 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.site-footer a { text-decoration: none; color: var(--ink-dim); }
+.site-footer a:hover { color: var(--ink); }

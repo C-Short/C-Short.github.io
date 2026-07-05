@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cait Short — Geospatial Portfolio</title>
+<meta name="description" content="Network-based accessibility analysis and interactive mapping.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+
+<style>
+  /* ── Hero ─────────────────────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    padding: 96px 0 88px;
+    overflow: hidden;
+  }
+
+  .hero .wrap { position: relative; z-index: 2; }
+
+  .hero-eyebrow { margin-bottom: 18px; }
+
+  .hero h1 {
+    font-size: clamp(34px, 5.2vw, 54px);
+    line-height: 1.08;
+    max-width: 15ch;
+  }
+
+  .hero h1 .accent { color: var(--cta); }
+
+  .hero p {
+    max-width: 52ch;
+    margin: 22px 0 0;
+    color: var(--ink-dim);
+    font-size: 18px;
+  }
+
+  /* Ambient network — a few nodes and connecting lines drifting behind the hero text */
+  .hero-network {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0.55;
+  }
+
+  .hero-network circle {
+    animation: pulse 5s ease-in-out infinite;
+  }
+
+  .hero-network line {
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.35; r: 3; }
+    50%      { opacity: 0.9;  r: 4.5; }
+  }
+
+  /* ── Projects — transit line list ────────────────────────────────── */
+  .projects {
+    padding: 8px 0 40px;
+    position: relative;
+  }
+
+  .projects-header {
+    margin-bottom: 40px;
+  }
+
+  .projects-header h2 {
+    font-size: 26px;
+    margin-top: 10px;
+  }
+
+  .line-list {
+    position: relative;
+    padding-left: 34px;
+  }
+
+  .line-list::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: var(--line);
+  }
+
+  .stop {
+    position: relative;
+    margin-bottom: 56px;
+  }
+
+  .stop:last-child { margin-bottom: 0; }
+
+  .stop::before {
+    content: '';
+    position: absolute;
+    left: -34px;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--stop-color, var(--cta));
+    box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px var(--line);
+  }
+
+  .stop-route {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--stop-color, var(--cta));
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .stop a.stop-title {
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .stop h3 {
+    font-size: 23px;
+    display: inline;
+    background-image: linear-gradient(var(--stop-color, var(--cta)), var(--stop-color, var(--cta)));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition: background-size 0.25s ease;
+  }
+
+  .stop a.stop-title:hover h3 { background-size: 100% 1px; }
+
+  .stop p {
+    margin: 10px 0 0;
+    color: var(--ink-dim);
+    max-width: 58ch;
+    font-size: 16px;
+  }
+
+  .stop-meta {
+    display: flex;
+    gap: 14px;
+    margin-top: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .stop-meta span::before {
+    content: '·';
+    margin-right: 14px;
+    color: var(--line);
+  }
+  .stop-meta span:first-child::before { content: none; margin: 0; }
+
+  .stop-thumb {
+    margin-top: 18px;
+    width: 100%;
+    max-width: 460px;
+    aspect-ratio: 16 / 8;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .stop-placeholder {
+    position: relative;
+    display: block;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">C<span class="dot">·</span>Short</a>
+    <div class="nav-links">
+      <a href="https://github.com/C-Short" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <svg class="hero-network" viewBox="0 0 920 260" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <line x1="640" y1="40"  x2="760" y2="110" />
+    <line x1="760" y1="110" x2="700" y2="200" />
+    <line x1="760" y1="110" x2="870" y2="90" />
+    <line x1="700" y1="200" x2="810" y2="230" />
+    <circle cx="640" cy="40"  r="3.5" fill="var(--cta)"  style="animation-delay: 0s" />
+    <circle cx="760" cy="110" r="3.5" fill="var(--groc)" style="animation-delay: 1.1s" />
+    <circle cx="700" cy="200" r="3.5" fill="var(--ov)"   style="animation-delay: 2.2s" />
+    <circle cx="870" cy="90"  r="3.5" fill="var(--cta)"  style="animation-delay: 0.6s" />
+    <circle cx="810" cy="230" r="3.5" fill="var(--groc)" style="animation-delay: 1.7s" />
+  </svg>
+
+  <div class="wrap">
+    <div class="eyebrow hero-eyebrow">Geospatial analysis &amp; mapping</div>
+    <h1>Where the city<br>actually <span class="accent">reaches.</span></h1>
+    <p>
+      Network-based accessibility studies — built from real street geometry,
+      not straight-line buffers — turned into maps you can explore yourself.
+      Each project below links to its own interactive tool and the code behind it.
+    </p>
+  </div>
+</header>
+
+<main class="projects">
+  <div class="wrap">
+    <div class="projects-header">
+      <div class="eyebrow">Projects</div>
+      <h2>Live analysis, one stop at a time</h2>
+    </div>
+
+    <div class="line-list">
+
+      <div class="stop" style="--stop-color: var(--cta)">
+        <span class="stop-route">Line 01 — Active</span>
+        <a class="stop-title" href="chicago-transit/index.html">
+          <h3>Chicago Transit &amp; Grocery Access</h3>
+        </a>
+        <p>
+          Quarter-mile network walksheds around every CTA L station, intersected
+          live against walkable grocery access — revealing exactly where transit
+          and food access overlap, and where they don't.
+        </p>
+        <a class="stop-placeholder" href="chicago-transit/index.html" aria-label="Open Chicago Transit &amp; Grocery Access project">
+          <div class="stop-thumb"></div>
+        </a>
+        <div class="stop-meta">
+          <span>OSMnx · NetworkX · MapLibre GL</span>
+          <span>Citywide, all L lines</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Built with Python, OSMnx, and MapLibre GL.</p>
+    <div class="links">
+      <a href="https://github.com/C-Short" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
