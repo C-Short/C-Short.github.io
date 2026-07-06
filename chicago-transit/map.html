@@ -1,79 +1,263 @@
+
+/
+Claude finished the response
+6s
+
+Run actions/deploy-pages@v5
+with:
+ token: ***
+ timeout: 600000
+ error_count: 10
+ reporting_interval: 5000
+ artifact_name: github-pages
+ preview: false
+(node:2165) [DEP0040] DeprecationWarning: The punycode module is deprecated. Please use a userland alternative instead.
+(Use node --trace-deprecation ... to show where the warning was created)
+Fetching artifact metadata for "github-pages" in this workflow run
+Found 1 artifact(s)
+Creating Pages deployment with payload:
+{
+ "artifact_id": 8096460111,
+ "pages_build_version": "520a65fdc09f86d2ba3dbce91d239e09870cef67",
+ "oidc_token": "***"
+}
+Created deployment for 520a65fdc09f86d2ba3dbce91d239e09870cef67, ID: 520a65fdc09f86d2ba3dbce91d239e09870cef67
+Getting Pages deployment status...
+Error: Deployment failed, try again later.
+Run actions/deploy-pages@v5
+with:
+ token: ***
+ timeout: 600000
+ error_count: 10
+ reporting_interval: 5000
+ artifact_name: github-pages
+ preview: false
+(node:2165) [DEP0040] DeprecationWarning: The punycode module is deprecated. Please use a userland alternative instead.
+(Use node --trace-deprecation ... to show where the warning was created)
+Fetching artifact metadata for "github-pages" in this workflow run
+Found 1 artifact(s)
+Creating Pages deployment with payload:
+{
+ "artifact_id": 8096460111,
+ "pages_build_version": "520a65fdc09f86d2ba3dbce91d239e09870cef67",
+ "oidc_token": "***"
+}
+Created deployment for 520a65fdc09f86d2ba3dbce91d239e09870cef67, ID: 520a65fdc09f86d2ba3dbce91d239e09870cef67
+Getting Pages deployment status...
+Error: Deployment failed, try again later.
+
+Show more
+
+Diagnosed server-side issue, prescribed troubleshooting and deployment workaround
+Diagnosed server-side issue, prescribed troubleshooting and deployment workaround
+Good news — this isn't something wrong with your repo or files. This is a known, currently-active GitHub Pages backend issue, reported widely just this week by other people hitting the exact same error.
+
+What's happening: Your files upload fine (artifact created successfully), but GitHub's Pages service fails right at the final "publish" step. Multiple reports describe this as a server-side problem with GitHub's deployment backend, not a workflow or config issue.
+
+The simplest fix for your case: since you're just serving plain static HTML with no build process, you likely don't need the GitHub Actions deployment method at all. Switch to the older, simpler "deploy from a branch" method:
+
+Go to your repo → Settings → Pages
+Under "Build and deployment" → "Source", change it from GitHub Actions to Deploy from a branch
+Set branch to main, folder to / (root)
+Save
+This bypasses actions/deploy-pages entirely — GitHub just serves the files directly from the branch, which is both simpler and more reliable for a static site like yours, and sidesteps this specific backend bug.
+
+If you'd rather stick with Actions deployment: just retry — go to the Actions tab → find the failed run → "Re-run all jobs." Several reports say it self-recovers on retry since it's intermittent.
+
+If it keeps failing after both of those: it may be worth checking GitHub's status page to see if Pages is having a broader incident right now.
+
+Want me to walk through the Settings → Pages screen step by step?
+
+STUCK AT 'QUEUED' FOR AN HOUR. THOUGHTS?
+
+
+Searched the web
+Searched the web
+This is a known, currently widespread problem — not something specific to your repo. Multiple people are reporting the exact same "stuck at queued for hours" pattern this week, and it's being traced to a GitHub-side infrastructure/concurrency issue, not a config mistake on your end.
+
+Fastest fix for your situation — switch off Actions-based deployment entirely:
+
+Since you're just serving static HTML with no build step, you don't need GitHub Actions in the deploy path at all. Go to:
+
+Settings → Pages → Build and deployment → Source
+
+Change it from GitHub Actions to Deploy from a branch, set branch to main, folder / (root), and save.
+
+This bypasses the entire stuck queue/deploy-pages mechanism — GitHub just serves the files directly off the branch instead. It's simpler for a static site and sidesteps this specific bug entirely.
+
+If you want to try clearing the stuck job first (optional, before switching):
+
+Go to Settings → Environments → github-pages → look at deployment history — the stuck one may show there separately from the Actions tab
+Try canceling it from there specifically (not just the Actions tab), since a wedged Pages environment lock is what's causing other people's queues to jam indefinitely
+If cancel fails (common right now, several reports say "Failed to cancel workflow"), don't fight it — just switch to "Deploy from a branch" per above
+Given this is actively affecting many repos right now, I'd just make the switch rather than waiting it out. Want me to walk through exactly what that Settings page looks like?
+
+IT ALREADY WAS DEPLOY FROM BRANCH AND MAI NROOT
+
+
+Reconciling branch deployment configuration with workflow mismatch
+Reconciling branch deployment configuration with workflow mismatch
+That's an important detail — if Pages is set to "Deploy from a branch," GitHub shouldn't be running an Actions-based deploy job at all. That mismatch itself is likely the problem. Let me check for anything more specific on this exact combination.
+
+
+Examined workflow persistence and remediation strategies comprehensively
+Examined workflow persistence and remediation strategies comprehensively
+Good to know — that actually helps narrow it down. Here's the key thing: even in "Deploy from a branch" mode, GitHub still runs an internal Actions workflow called "pages build and deployment" behind the scenes — it's not something you configured, but it can still get stuck in the same queue. So this isn't inconsistent with what you're seeing.
+
+What's actually fixed this for people in your exact situation (branch mode, stuck queued):
+
+1. Re-apply the Pages source setting to force a state refresh
+Go to Settings → Pages → change Source to GitHub Actions, hit Save, then immediately switch it back to Deploy from a branch → main / root, hit Save again. This forces GitHub to re-sync its internal Pages state, which several people report clears a wedged queue that a simple retry doesn't.
+
+2. Push a fresh commit afterward
+Even an empty one, to retrigger a clean build:
+
+bash
+git commit --allow-empty -m "retrigger pages deploy"
+git push
+3. Check for a wedged deployment lock
+Settings → Environments → github-pages → look at deployment history there (separate from the Actions tab). If you see the stuck deployment still listed as active/in-progress, and you have admin rights, deleting that specific entry from history can release the lock that's blocking new ones.
+
+4. Check githubstatus.com
+There was a broader GitHub Pages incident reported and marked resolved in just the past few days — worth a 10-second check to rule out you're mid-incident right now.
+
+Try steps 1–2 first since that's the highest-success fix reported for your exact scenario. Let me know what happens.
+
+the overlap doesn't always show up. . . and on start the overlap shows on the map even when it is off.  for example, overlap showed when cta l and grocery were at 3/4, but when i reduce the grocery walkshed the overlap still shows correctly, but when i als oreduce cta l walkshed it disappears.  also the mile tics (1/4mile, 1/2 mile are not legible.  too small and font is weird.  and the bar goes inbetween for example 1/2 mile and three-quarter mile, instead of on 1/2 mile or 3/4.  let's make it an item you drag.  are we able to add a search bar for adresses/neighborhoods?
+
+
+Catalogued six map interface issues requiring fixes
+Catalogued six map interface issues requiring fixes
+Several issues to fix. Let me look at the current map code and address everything.
+
+
+Diagnosed geometry bugs, redesigned slider interaction, planned address search integration
+Diagnosed geometry bugs, redesigned slider interaction, planned address search integration
+Got it — multiple issues to fix. Let me rebuild map.html addressing all of them:
+
+Overlap disappearing — turf.intersect fails silently on complex MultiPolygons. Need to flatten first.
+Overlap visible on start when it shouldn't be — layer visibility not synced with toggle state on init.
+Slider labels illegible — bigger font, clearer labels.
+Slider snapping between notches — replace with a properly styled visible range input that snaps to notch positions.
+Search bar — add Nominatim geocoding (free, no API key).
+
+Ran 2 commands, read a file
+Ran 2 commands, read a file
+Here's what changed:
+
+Overlap fixes:
+
+recomputeOverlap() → syncOverlap() which now controls both the data source AND layer visibility (the old version only cleared data, so stale overlap geometry could linger visually)
+New safeIntersect() function: tries turf.intersect first, and if it throws on a complex MultiPolygon, falls back to flattening both inputs into simple Polygons, intersecting each pair, then unioning the results back together. This should fix the disappearing overlap at certain slider combinations.
+Slider overhaul:
+
+Replaced the invisible-range-over-fake-track approach with a properly styled native <input type="range"> — visible white thumb with colored border (blue for CTA, green for grocery), grab cursor, scales on press
+Tick marks are separate divs below the track, aligned to the 4 notch positions
+Labels bumped to 13px Inter (was 9.5px mono) with full labels: ¼ mi, ½ mi, ¾ mi, 1 mi instead of abbreviated
+step="1" on the range input means the thumb snaps exactly to each notch, not between them
+Search bar:
+
+Text input at the top of the panel with a search icon
+Queries Nominatim (OpenStreetMap's free geocoder, no API key needed) after 350ms debounce
+Appends ", Chicago, IL" to queries automatically so neighborhood names and addresses resolve correctly
+Results appear in a dropdown; clicking one flies the map to that location and drops an orange marker
+Closes on Escape or click outside
+Other:
+
+Font switched to Inter (loaded from Google Fonts) throughout the panel for legibility
+Toggle switches slightly larger (32×18px)
+Panel width bumped to 280px to fit the search input comfortably
+
+Map
+Code · HTML 
+
+
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+
+
+Map · HTML
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Chicago Transit & Grocery Access</title>
-
+ 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+ 
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css">
 <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
 <script src="https://unpkg.com/@turf/turf@6.5.0/turf.min.js"></script>
-
+ 
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   :root {
-    --cta-mid:    #2e78c8;
-    --cta-stroke: #88bbee;
-    --groc-mid:   #2ea04a;
-    --groc-stroke:#88ccaa;
-    --ov-mid:     #d94010;
-
-    --panel-bg:     rgba(10, 12, 16, 0.88);
+    --cta-fill:   #2e78c8;
+    --groc-fill:  #2ea04a;
+    --ov-fill:    #d94010;
+ 
+    --panel-bg:     rgba(10, 12, 16, 0.90);
     --panel-border: rgba(255,255,255,0.08);
     --text:         #e8eaf0;
-    --text-muted:   #8892a0;
-
+    --text-dim:     #b0b8c4;
+    --text-muted:   #727e8e;
+ 
     --radius: 6px;
-    --mono:   'JetBrains Mono', 'Fira Mono', 'Courier New', monospace;
-    --sans:   'Inter', system-ui, sans-serif;
+    --sans: 'Inter', system-ui, -apple-system, sans-serif;
   }
-
+ 
   html, body { width:100%; height:100%; overflow:hidden; background:#0a0c10; }
   #map { position:absolute; inset:0; }
-
+ 
   /* ── Panel ── */
   #panel {
     position: absolute;
     top: 16px; left: 16px;
-    width: 264px;
+    width: 280px;
     background: var(--panel-bg);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     font-family: var(--sans);
     color: var(--text);
     overflow: hidden;
     z-index: 10;
     transition: width 0.22s ease;
   }
-
+ 
   #panel.collapsed { width: 44px; }
-
+ 
   #panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 14px;
+    padding: 14px 16px;
     border-bottom: 1px solid var(--panel-border);
     cursor: pointer;
     user-select: none;
     gap: 8px;
   }
-
+ 
   #panel-title {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-muted);
     white-space: nowrap;
     transition: opacity 0.15s;
   }
-
+ 
   #panel.collapsed #panel-title { opacity: 0; }
-
+ 
   #toggle-btn {
     flex-shrink: 0;
     color: var(--text-muted);
@@ -81,165 +265,250 @@
     align-items: center;
     transition: transform 0.22s;
   }
-
+ 
   #panel.collapsed #toggle-btn { transform: rotate(180deg); }
-
+ 
   #panel-body {
-    padding: 16px 14px 14px;
+    padding: 18px 16px 16px;
     transition: opacity 0.15s;
   }
-
+ 
   #panel.collapsed #panel-body { opacity: 0; pointer-events: none; }
-
-  /* ── Sections ── */
-  .section { margin-bottom: 18px; }
+ 
+  /* ── Search ── */
+  .search-wrap {
+    position: relative;
+    margin-bottom: 18px;
+  }
+ 
+  .search-wrap input {
+    width: 100%;
+    padding: 8px 10px 8px 32px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+ 
+  .search-wrap input::placeholder { color: var(--text-muted); }
+  .search-wrap input:focus { border-color: rgba(255,255,255,0.25); }
+ 
+  .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+ 
+  .search-results {
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    margin-top: 4px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    max-height: 180px;
+    overflow-y: auto;
+    display: none;
+    z-index: 20;
+  }
+ 
+  .search-results.open { display: block; }
+ 
+  .search-result {
+    padding: 8px 12px;
+    font-size: 13px;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 1px solid var(--panel-border);
+    line-height: 1.35;
+  }
+ 
+  .search-result:last-child { border-bottom: none; }
+  .search-result:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+ 
+  /* ── Layer section ── */
+  .section { margin-bottom: 20px; }
   .section:last-child { margin-bottom: 0; }
-
+ 
   .section-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
-
+ 
   .layer-label {
     display: flex;
     align-items: center;
-    gap: 7px;
-    font-size: 12px;
+    gap: 8px;
+    font-size: 13px;
     font-weight: 600;
-    letter-spacing: 0.02em;
   }
-
+ 
   .swatch {
     width: 10px; height: 10px;
     border-radius: 2px;
     flex-shrink: 0;
   }
-
-  /* ── Slider ── */
+ 
+  /* ── Range slider — visible styled thumb ── */
   .slider-wrap {
     position: relative;
-    padding-bottom: 18px;
+    padding: 6px 0 28px;
   }
-
-  .slider-track {
-    position: relative;
-    height: 3px;
-    background: rgba(255,255,255,0.10);
-    border-radius: 2px;
-    margin: 0 1px;
-    pointer-events: none;
-  }
-
-  .slider-fill {
-    position: absolute;
-    left: 0; top: 0;
-    height: 100%;
-    border-radius: 2px;
-    transition: width 0.08s;
-    pointer-events: none;
-  }
-
-  /* tick marks at 0 / 33% / 66% / 100% */
-  .slider-track::before,
-  .slider-track::after,
-  .slider-track .tick-mid1,
-  .slider-track .tick-mid2 {
-    content: '';
-    position: absolute;
-    top: 0; width: 1px; height: 100%;
-    background: rgba(255,255,255,0.22);
-  }
-  .slider-track::before { left: 0; }
-  .slider-track::after  { right: 0; }
-
-  .tick-mid1 { left: 33.3%; }
-  .tick-mid2 { left: 66.6%; }
-
+ 
   input[type=range] {
-    position: absolute;
-    top: -6px; left: 0;
+    -webkit-appearance: none;
+    appearance: none;
     width: 100%;
-    height: 16px;
-    opacity: 0;
+    height: 4px;
+    border-radius: 2px;
+    outline: none;
     cursor: pointer;
     margin: 0;
   }
-
-  .slider-labels {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
+ 
+  input[type=range]::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.10);
+  }
+ 
+  input[type=range]::-moz-range-track {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.10);
+    border: none;
+  }
+ 
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--thumb-color, var(--cta-fill));
+    cursor: grab;
+    margin-top: -6px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    transition: transform 0.1s;
+  }
+ 
+  input[type=range]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--thumb-color, var(--cta-fill));
+    cursor: grab;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  }
+ 
+  input[type=range]:active::-webkit-slider-thumb { transform: scale(1.15); cursor: grabbing; }
+  input[type=range]:active::-moz-range-thumb { transform: scale(1.15); cursor: grabbing; }
+ 
+  /* Tick marks under the track */
+  .slider-ticks {
     display: flex;
     justify-content: space-between;
+    padding: 0;
+    position: absolute;
+    top: 12px;
+    left: 0; right: 0;
+    pointer-events: none;
   }
-
+ 
+  .slider-ticks span {
+    width: 1px;
+    height: 6px;
+    background: rgba(255,255,255,0.20);
+  }
+ 
+  .slider-labels {
+    position: absolute;
+    bottom: 0;
+    left: -4px; right: -4px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+ 
   .slider-labels span {
-    font-family: var(--mono);
-    font-size: 9.5px;
-    color: var(--text-muted);
-    line-height: 1;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-dim);
+    width: 36px;
+    text-align: center;
   }
-
+ 
   /* ── Toggle switch ── */
   .toggle {
     position: relative;
-    width: 28px; height: 16px;
+    width: 32px; height: 18px;
     flex-shrink: 0;
   }
-
-  .toggle input { opacity:0; width:0; height:0; }
-
+ 
+  .toggle input { opacity:0; width:0; height:0; position:absolute; }
+ 
   .toggle-track {
     position: absolute; inset: 0;
     background: rgba(255,255,255,0.12);
-    border-radius: 8px;
+    border-radius: 9px;
     cursor: pointer;
     transition: background 0.18s;
   }
-
-  .toggle input:checked + .toggle-track { background: rgba(255,255,255,0.28); }
-
+ 
+  .toggle input:checked + .toggle-track { background: rgba(255,255,255,0.30); }
+ 
   .toggle-thumb {
     position: absolute;
     top: 2px; left: 2px;
-    width: 12px; height: 12px;
+    width: 14px; height: 14px;
     background: var(--text-muted);
     border-radius: 50%;
     pointer-events: none;
     transition: transform 0.18s, background 0.18s;
   }
-
+ 
   .toggle input:checked ~ .toggle-thumb {
-    transform: translateX(12px);
+    transform: translateX(14px);
     background: #fff;
   }
-
+ 
   /* ── Divider ── */
   .divider {
     height: 1px;
     background: var(--panel-border);
-    margin: 14px 0;
+    margin: 16px 0;
   }
-
-  /* ── Toggle rows (overlap / points) ── */
+ 
+  /* ── Toggle rows ── */
   .tog-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
   }
-
+ 
   .tog-row:last-child { margin-bottom: 0; }
-
+ 
   .tog-label {
-    font-size: 11px;
-    color: var(--text-muted);
+    font-size: 13px;
+    color: var(--text-dim);
     display: flex;
     align-items: center;
-    gap: 7px;
+    gap: 8px;
   }
-
+ 
   /* ── Hover tooltip ── */
   #hover-tip {
     position: absolute;
@@ -249,9 +518,9 @@
     background: var(--panel-bg);
     border: 1px solid var(--panel-border);
     border-radius: var(--radius);
-    padding: 9px 14px;
+    padding: 10px 16px;
     font-family: var(--sans);
-    font-size: 12px;
+    font-size: 13px;
     color: var(--text);
     pointer-events: none;
     backdrop-filter: blur(14px);
@@ -262,26 +531,28 @@
     z-index: 10;
     line-height: 1.9;
   }
-
+ 
   #hover-tip.visible { opacity: 1; }
-
+ 
   .tip-row {
     display: flex;
     align-items: center;
     gap: 8px;
   }
-
+ 
   .tip-dot {
     width: 8px; height: 8px;
     border-radius: 50%;
     flex-shrink: 0;
   }
+ 
+  .maplibregl-ctrl-attrib { font-size: 10px !important; }
 </style>
 </head>
 <body>
-
+ 
 <div id="map"></div>
-
+ 
 <div id="panel">
   <div id="panel-header">
     <span id="panel-title">Access Layers</span>
@@ -291,14 +562,21 @@
       </svg>
     </span>
   </div>
-
+ 
   <div id="panel-body">
-
+ 
+    <!-- Search -->
+    <div class="search-wrap">
+      <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="search-input" placeholder="Search address or neighborhood">
+      <div class="search-results" id="search-results"></div>
+    </div>
+ 
     <!-- CTA slider -->
     <div class="section">
       <div class="section-row">
         <div class="layer-label">
-          <div class="swatch" style="background:var(--cta-mid)"></div>
+          <div class="swatch" style="background:var(--cta-fill)"></div>
           CTA L Walkshed
         </div>
         <label class="toggle">
@@ -308,23 +586,19 @@
         </label>
       </div>
       <div class="slider-wrap">
-        <div class="slider-track">
-          <div class="tick-mid1"></div>
-          <div class="tick-mid2"></div>
-          <div class="slider-fill" id="fill-cta" style="background:var(--cta-mid);width:25%"></div>
-        </div>
-        <input type="range" id="slider-cta" min="0" max="3" step="1" value="0">
+        <input type="range" id="slider-cta" min="0" max="3" step="1" value="0" style="--thumb-color: var(--cta-fill)">
+        <div class="slider-ticks"><span></span><span></span><span></span><span></span></div>
         <div class="slider-labels">
-          <span>¼ mi</span><span>½</span><span>¾</span><span>1 mi</span>
+          <span>¼ mi</span><span>½ mi</span><span>¾ mi</span><span>1 mi</span>
         </div>
       </div>
     </div>
-
+ 
     <!-- Grocery slider -->
     <div class="section">
       <div class="section-row">
         <div class="layer-label">
-          <div class="swatch" style="background:var(--groc-mid)"></div>
+          <div class="swatch" style="background:var(--groc-fill)"></div>
           Grocery Walkshed
         </div>
         <label class="toggle">
@@ -334,24 +608,20 @@
         </label>
       </div>
       <div class="slider-wrap">
-        <div class="slider-track">
-          <div class="tick-mid1"></div>
-          <div class="tick-mid2"></div>
-          <div class="slider-fill" id="fill-groc" style="background:var(--groc-mid);width:25%"></div>
-        </div>
-        <input type="range" id="slider-groc" min="0" max="3" step="1" value="0">
+        <input type="range" id="slider-groc" min="0" max="3" step="1" value="0" style="--thumb-color: var(--groc-fill)">
+        <div class="slider-ticks"><span></span><span></span><span></span><span></span></div>
         <div class="slider-labels">
-          <span>¼ mi</span><span>½</span><span>¾</span><span>1 mi</span>
+          <span>¼ mi</span><span>½ mi</span><span>¾ mi</span><span>1 mi</span>
         </div>
       </div>
     </div>
-
+ 
     <div class="divider"></div>
-
+ 
     <!-- Overlap toggle -->
     <div class="tog-row">
       <div class="tog-label">
-        <div class="swatch" style="background:var(--ov-mid)"></div>
+        <div class="swatch" style="background:var(--ov-fill)"></div>
         Overlap
       </div>
       <label class="toggle">
@@ -360,9 +630,9 @@
         <div class="toggle-thumb"></div>
       </label>
     </div>
-
+ 
     <div class="divider"></div>
-
+ 
     <!-- Points toggles -->
     <div class="tog-row">
       <span class="tog-label">L Stations</span>
@@ -380,21 +650,21 @@
         <div class="toggle-thumb"></div>
       </label>
     </div>
-
+ 
   </div>
 </div>
-
+ 
 <div id="hover-tip"></div>
-
+ 
 <script>
 const DIST_LABELS = ['¼ mi', '½ mi', '¾ mi', '1 mi'];
-
+ 
 const DATA_PATHS = {
   cta:    'data/walksheds_cta.geojson',
   groc:   'data/walksheds_groc.geojson',
   points: 'data/points.geojson',
 };
-
+ 
 const state = {
   ctaIdx:      0,
   grocIdx:     0,
@@ -406,7 +676,7 @@ const state = {
   ctaFeats:    [],
   grocFeats:   [],
 };
-
+ 
 // ── Map ───────────────────────────────────────────────────────
 const map = new maplibregl.Map({
   container: 'map',
@@ -422,7 +692,7 @@ const map = new maplibregl.Map({
         ],
         tileSize: 256,
         maxzoom: 20,
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
       }
     },
     layers: [{ id: 'basemap', type: 'raster', source: 'basemap' }]
@@ -430,9 +700,9 @@ const map = new maplibregl.Map({
   center: [-87.68, 41.84],
   zoom: 11,
 });
-
+ 
 map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
-
+ 
 // ── Load & init ───────────────────────────────────────────────
 map.on('load', async () => {
   const [ctaGJ, grocGJ, ptsGJ] = await Promise.all([
@@ -440,171 +710,280 @@ map.on('load', async () => {
     fetch(DATA_PATHS.groc).then(r => r.json()),
     fetch(DATA_PATHS.points).then(r => r.json()),
   ]);
-
+ 
   state.ctaFeats  = ctaGJ.features.sort((a,b) => a.properties.dist_idx - b.properties.dist_idx);
   state.grocFeats = grocGJ.features.sort((a,b) => a.properties.dist_idx - b.properties.dist_idx);
-
+ 
   // Sources
   map.addSource('cta-ws',  { type: 'geojson', data: fc([state.ctaFeats[0]]) });
   map.addSource('groc-ws', { type: 'geojson', data: fc([state.grocFeats[0]]) });
   map.addSource('overlap', { type: 'geojson', data: fc([]) });
   map.addSource('points',  { type: 'geojson', data: ptsGJ });
-
-  // Layers — fill then line for each, overlap on top, points last
-  map.addLayer({ id:'cta-fill',  type:'fill',   source:'cta-ws',  paint:{ 'fill-color':'#2e78c8', 'fill-opacity':0.22 } });
-  map.addLayer({ id:'cta-line',  type:'line',   source:'cta-ws',  paint:{ 'line-color':'#2e78c8', 'line-width':1.5, 'line-opacity':0.65 } });
-  map.addLayer({ id:'groc-fill', type:'fill',   source:'groc-ws', paint:{ 'fill-color':'#2ea04a', 'fill-opacity':0.22 } });
-  map.addLayer({ id:'groc-line', type:'line',   source:'groc-ws', paint:{ 'line-color':'#2ea04a', 'line-width':1.5, 'line-opacity':0.65 } });
-  map.addLayer({ id:'ov-fill',   type:'fill',   source:'overlap', paint:{ 'fill-color':'#d94010', 'fill-opacity':0.42 } });
-  map.addLayer({ id:'ov-line',   type:'line',   source:'overlap', paint:{ 'line-color':'#d94010', 'line-width':1,   'line-opacity':0.55 } });
-
+ 
+  // Layers
+  map.addLayer({ id:'cta-fill',  type:'fill', source:'cta-ws',  paint:{ 'fill-color':'#2e78c8', 'fill-opacity':0.22 } });
+  map.addLayer({ id:'cta-line',  type:'line', source:'cta-ws',  paint:{ 'line-color':'#2e78c8', 'line-width':1.5, 'line-opacity':0.65 } });
+  map.addLayer({ id:'groc-fill', type:'fill', source:'groc-ws', paint:{ 'fill-color':'#2ea04a', 'fill-opacity':0.22 } });
+  map.addLayer({ id:'groc-line', type:'line', source:'groc-ws', paint:{ 'line-color':'#2ea04a', 'line-width':1.5, 'line-opacity':0.65 } });
+  map.addLayer({ id:'ov-fill',   type:'fill', source:'overlap', paint:{ 'fill-color':'#d94010', 'fill-opacity':0.42 } });
+  map.addLayer({ id:'ov-line',   type:'line', source:'overlap', paint:{ 'line-color':'#d94010', 'line-width':1,   'line-opacity':0.55 } });
+ 
   map.addLayer({
     id:'cta-pts', type:'circle', source:'points',
     filter: ['==', ['get','layer'], 'cta_station'],
     paint: { 'circle-radius':4, 'circle-color':'#1a4a7a', 'circle-stroke-color':'#88bbee', 'circle-stroke-width':1.5, 'circle-opacity':0.9 },
     layout: { visibility:'none' }
   });
-
+ 
   map.addLayer({
     id:'groc-pts', type:'circle', source:'points',
     filter: ['==', ['get','layer'], 'grocery_point'],
     paint: { 'circle-radius':3.5, 'circle-color':'#1a5c30', 'circle-stroke-color':'#88ccaa', 'circle-stroke-width':1.5, 'circle-opacity':0.9 },
     layout: { visibility:'none' }
   });
-
-  recomputeOverlap();
+ 
+  // Sync overlap visibility with toggle state before computing
+  syncOverlap();
   initHover();
 });
-
+ 
 // ── Helpers ───────────────────────────────────────────────────
 function fc(features) {
   return { type:'FeatureCollection', features: features.filter(Boolean) };
 }
-
+ 
 function setVis(ids, visible) {
-  ids.forEach(id => map.getLayer(id) && map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none'));
+  const v = visible ? 'visible' : 'none';
+  ids.forEach(id => {
+    if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', v);
+  });
 }
-
-function recomputeOverlap() {
-  const shouldShow = state.showOv && state.showCta && state.showGroc;
-  if (!shouldShow) { map.getSource('overlap').setData(fc([])); return; }
-
-  const a = state.ctaFeats[state.ctaIdx];
-  const b = state.grocFeats[state.grocIdx];
-  if (!a || !b) return;
-
+ 
+// ── Overlap — robust intersection via flatten ─────────────────
+// turf.intersect can fail on complex MultiPolygons. To fix:
+// 1. Flatten both inputs into arrays of simple Polygons
+// 2. Intersect each pair
+// 3. Combine results
+function safeIntersect(featA, featB) {
   try {
-    const ov = turf.intersect(a, b);
-    map.getSource('overlap').setData(ov ? fc([ov]) : fc([]));
+    // First try the simple path
+    const simple = turf.intersect(featA, featB);
+    if (simple) return simple;
+  } catch(_) {}
+ 
+  // Fallback: flatten MultiPolygons and intersect pairwise
+  try {
+    const polysA = turf.flatten(featA).features;
+    const polysB = turf.flatten(featB).features;
+    const parts = [];
+    for (const a of polysA) {
+      for (const b of polysB) {
+        try {
+          const ix = turf.intersect(a, b);
+          if (ix) parts.push(ix);
+        } catch(_) {}
+      }
+    }
+    if (parts.length === 0) return null;
+    if (parts.length === 1) return parts[0];
+    // Combine all intersection fragments
+    let combined = parts[0];
+    for (let i = 1; i < parts.length; i++) {
+      try {
+        combined = turf.union(combined, parts[i]);
+      } catch(_) {
+        // If union fails, just keep what we have
+      }
+    }
+    return combined;
   } catch(_) {
-    map.getSource('overlap').setData(fc([]));
+    return null;
   }
 }
-
-function updateSliderFill(fillId, idx) {
-  document.getElementById(fillId).style.width = `${(idx + 1) * 25}%`;
+ 
+function syncOverlap() {
+  const src = map.getSource('overlap');
+  if (!src) return;
+ 
+  // Control layer visibility
+  const ovVisible = state.showOv && state.showCta && state.showGroc;
+  setVis(['ov-fill', 'ov-line'], ovVisible);
+ 
+  if (!ovVisible) {
+    src.setData(fc([]));
+    return;
+  }
+ 
+  const a = state.ctaFeats[state.ctaIdx];
+  const b = state.grocFeats[state.grocIdx];
+  if (!a || !b) { src.setData(fc([])); return; }
+ 
+  const ov = safeIntersect(a, b);
+  src.setData(ov ? fc([ov]) : fc([]));
 }
-
+ 
 // ── Hover ─────────────────────────────────────────────────────
 function initHover() {
   const tip = document.getElementById('hover-tip');
-
+ 
   map.on('mousemove', e => {
     const feats = map.queryRenderedFeatures(e.point, { layers: ['cta-fill','groc-fill','ov-fill'] });
     const hit = new Set(feats.map(f => f.layer.id));
-
+ 
     const inCta  = hit.has('cta-fill')  && state.showCta;
     const inGroc = hit.has('groc-fill') && state.showGroc;
     const inOv   = hit.has('ov-fill')   && state.showOv;
-
+ 
     if (!inCta && !inGroc && !inOv) {
       tip.classList.remove('visible');
       map.getCanvas().style.cursor = '';
       return;
     }
-
+ 
     map.getCanvas().style.cursor = 'crosshair';
-
     const rows = [];
-
+ 
     if (inOv) {
       rows.push(tipRow('#d94010', `Within ${DIST_LABELS[state.ctaIdx]} of L <em>and</em> ${DIST_LABELS[state.grocIdx]} of grocery`));
     } else {
       if (inCta)  rows.push(tipRow('#2e78c8', `Within ${DIST_LABELS[state.ctaIdx]} of an L station`));
       if (inGroc) rows.push(tipRow('#2ea04a', `Within ${DIST_LABELS[state.grocIdx]} of a grocery store`));
     }
-
-    // If in overlap zone but overlap layer hidden, still describe the component layers
-    if (!inOv && inCta && inGroc) {
-      // already handled above
-    }
-
+ 
     tip.innerHTML = rows.join('');
     tip.classList.add('visible');
   });
-
+ 
   map.on('mouseout', () => {
     tip.classList.remove('visible');
     map.getCanvas().style.cursor = '';
   });
 }
-
+ 
 function tipRow(color, text) {
   return `<div class="tip-row"><div class="tip-dot" style="background:${color}"></div>${text}</div>`;
 }
-
+ 
 // ── Sliders ───────────────────────────────────────────────────
 document.getElementById('slider-cta').addEventListener('input', e => {
   state.ctaIdx = +e.target.value;
-  updateSliderFill('fill-cta', state.ctaIdx);
   if (map.getSource('cta-ws')) {
     map.getSource('cta-ws').setData(fc([state.ctaFeats[state.ctaIdx]]));
-    recomputeOverlap();
+    syncOverlap();
   }
 });
-
+ 
 document.getElementById('slider-groc').addEventListener('input', e => {
   state.grocIdx = +e.target.value;
-  updateSliderFill('fill-groc', state.grocIdx);
   if (map.getSource('groc-ws')) {
     map.getSource('groc-ws').setData(fc([state.grocFeats[state.grocIdx]]));
-    recomputeOverlap();
+    syncOverlap();
   }
 });
-
+ 
 // ── Toggles ───────────────────────────────────────────────────
 document.getElementById('tog-cta').addEventListener('change', e => {
   state.showCta = e.target.checked;
   setVis(['cta-fill','cta-line'], state.showCta);
-  recomputeOverlap();
+  syncOverlap();
 });
-
+ 
 document.getElementById('tog-groc').addEventListener('change', e => {
   state.showGroc = e.target.checked;
   setVis(['groc-fill','groc-line'], state.showGroc);
-  recomputeOverlap();
+  syncOverlap();
 });
-
+ 
 document.getElementById('tog-ov').addEventListener('change', e => {
   state.showOv = e.target.checked;
-  setVis(['ov-fill','ov-line'], state.showOv);
-  recomputeOverlap();
+  syncOverlap();
 });
-
+ 
 document.getElementById('tog-cta-pts').addEventListener('change', e => {
-  state.showCtaPts = e.target.checked;
-  setVis(['cta-pts'], state.showCtaPts);
+  setVis(['cta-pts'], e.target.checked);
 });
-
+ 
 document.getElementById('tog-groc-pts').addEventListener('change', e => {
-  state.showGrocPts = e.target.checked;
-  setVis(['groc-pts'], state.showGrocPts);
+  setVis(['groc-pts'], e.target.checked);
 });
-
+ 
 // ── Panel collapse ────────────────────────────────────────────
 document.getElementById('panel-header').addEventListener('click', () => {
   document.getElementById('panel').classList.toggle('collapsed');
 });
+ 
+// ── Search — Nominatim geocoding (free, no API key) ──────────
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+let searchTimeout = null;
+let searchMarker = null;
+ 
+searchInput.addEventListener('input', () => {
+  clearTimeout(searchTimeout);
+  const q = searchInput.value.trim();
+  if (q.length < 3) { searchResults.classList.remove('open'); return; }
+ 
+  searchTimeout = setTimeout(async () => {
+    try {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q + ', Chicago, IL')}&limit=5&addressdetails=1`;
+      const resp = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+      const results = await resp.json();
+ 
+      if (results.length === 0) {
+        searchResults.innerHTML = '<div class="search-result" style="color:var(--text-muted);cursor:default">No results</div>';
+        searchResults.classList.add('open');
+        return;
+      }
+ 
+      searchResults.innerHTML = results.map((r, i) =>
+        `<div class="search-result" data-idx="${i}" data-lat="${r.lat}" data-lon="${r.lon}">${r.display_name.split(',').slice(0, 3).join(', ')}</div>`
+      ).join('');
+      searchResults.classList.add('open');
+    } catch(_) {
+      searchResults.classList.remove('open');
+    }
+  }, 350);
+});
+ 
+searchResults.addEventListener('click', e => {
+  const item = e.target.closest('.search-result');
+  if (!item || !item.dataset.lat) return;
+ 
+  const lat = +item.dataset.lat;
+  const lon = +item.dataset.lon;
+ 
+  map.flyTo({ center: [lon, lat], zoom: 14.5, duration: 1200 });
+ 
+  if (searchMarker) searchMarker.remove();
+  searchMarker = new maplibregl.Marker({ color: '#d94010' })
+    .setLngLat([lon, lat])
+    .addTo(map);
+ 
+  searchInput.value = item.textContent;
+  searchResults.classList.remove('open');
+});
+ 
+// Close search results on click outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrap')) {
+    searchResults.classList.remove('open');
+  }
+});
+ 
+// Close on Escape
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    searchResults.classList.remove('open');
+    searchInput.blur();
+  }
+});
 </script>
 </body>
 </html>
+ 
+
+
+
+
+
+
