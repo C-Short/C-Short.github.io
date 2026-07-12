@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Train Spotter — Cait Short</title>
+<meta name="description" content="A physical e-ink departure board displaying live public transit arrivals.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/style.css">
+
+<style>
+  .breadcrumb {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 22px;
+  }
+  .breadcrumb a { text-decoration: none; color: var(--ink-dim); }
+  .breadcrumb a:hover { color: var(--ink); }
+
+  .project-header { padding: 56px 0 8px; }
+
+  .project-header h1 {
+    font-size: clamp(30px, 4.4vw, 44px);
+    max-width: 18ch;
+    margin-top: 12px;
+  }
+
+  .project-header .dek {
+    max-width: 56ch;
+    color: var(--ink-dim);
+    font-size: 18px;
+    margin: 18px 0 0;
+  }
+
+  /* ── Preview image ────────────────────────────────────────────────── */
+  .project-preview {
+    margin: 40px 0 56px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    aspect-ratio: 16/7;
+    background: var(--surface);
+  }
+
+  .project-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ── Build timeline ───────────────────────────────────────────────── */
+  .build-timeline {
+    position: relative;
+    padding-left: 34px;
+    margin-bottom: 56px;
+  }
+
+  .build-timeline::before {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--line);
+  }
+
+  .build-entry {
+    position: relative;
+    margin-bottom: 40px;
+  }
+
+  .build-entry:last-child { margin-bottom: 0; }
+
+  .build-entry::before {
+    content: '';
+    position: absolute;
+    left: -34px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--line);
+    box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px var(--line);
+  }
+
+  .build-entry.current::before {
+    background: var(--ov);
+    box-shadow: 0 0 0 4px var(--bg), 0 0 0 5px var(--ov);
+  }
+
+  .build-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .build-entry.current .build-tag { color: var(--ov); }
+
+  .build-entry h4 {
+    font-size: 17px;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .build-entry p {
+    font-size: 15px;
+    color: var(--ink-dim);
+    max-width: 58ch;
+    margin: 0;
+  }
+
+  /* ── Content sections ─────────────────────────────────────────────── */
+  .section {
+    margin-bottom: 56px;
+  }
+
+  .section h2 {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  .section p {
+    color: var(--ink-dim);
+    max-width: 64ch;
+  }
+
+  .section p + p { margin-top: 14px; }
+
+  /* ── Spec grid ────────────────────────────────────────────────────── */
+  .spec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .spec-item {
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+
+  .spec-item .spec-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .spec-item .spec-value {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .spec-item.placeholder .spec-value {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* ── Code link ────────────────────────────────────────────────────── */
+  .code-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 13px;
+    background: var(--surface);
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .code-cta:hover {
+    border-color: var(--ov);
+    background: var(--surface-2);
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brand" href="../index.html">C<span class="dot">·</span>Short</a>
+    <div class="nav-links">
+      <a href="https://github.com/C-Short" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <div class="breadcrumb" style="margin-top:28px;">
+      <a href="../index.html">Projects</a> / Train Spotter
+    </div>
+
+    <header class="project-header">
+      <div class="eyebrow" style="color: var(--ov)">Line 02 — Active</div>
+      <h1>Train Spotter</h1>
+      <p class="dek">
+        A physical e-ink departure board that shows live transit arrivals
+        at a glance — no phone, no app, no screen glow. Built for the
+        shelf by the door.
+      </p>
+    </header>
+
+    <div class="project-preview">
+      <img
+        src="../assets/images/train-spotter-preview.jpg"
+        alt="E-ink display showing live transit departures"
+      >
+    </div>
+
+    <!-- ── Build timeline ─────────────────────────────────────────── -->
+    <div class="build-timeline">
+
+      <div class="build-entry">
+        <span class="build-tag">v1 — Charlotte</span>
+        <h4>First build</h4>
+        <p>[ What the Charlotte version did, what it looked like, what it got right — TBD ]</p>
+      </div>
+
+      <div class="build-entry current">
+        <span class="build-tag">v2 — Chicago · Current</span>
+        <h4>Bus + train</h4>
+        <p>[ What changed, what was added, why Chicago pushed it further — TBD ]</p>
+      </div>
+
+    </div>
+
+    <!-- ── Why I built it ─────────────────────────────────────────── -->
+    <section class="section">
+      <h2>Why I built it</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+        eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+        ad minim veniam, quis nostrud exercitation ullamco laboris.
+      </p>
+      <p>
+        Duis aute irure dolor in reprehenderit in voluptate velit esse
+        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+        cupidatat non proident — [ inspiration / what prompted this ].
+      </p>
+    </section>
+
+    <!-- ── Hardware ───────────────────────────────────────────────── -->
+    <section class="section">
+      <h2>Hardware</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim
+        ad minim veniam — [ describe the physical build here ].
+      </p>
+      <div class="spec-grid">
+        <div class="spec-item placeholder">
+          <span class="spec-label">Board</span>
+          <span class="spec-value">TBD</span>
+        </div>
+        <div class="spec-item placeholder">
+          <span class="spec-label">Display</span>
+          <span class="spec-value">TBD</span>
+        </div>
+        <div class="spec-item placeholder">
+          <span class="spec-label">Display size</span>
+          <span class="spec-value">TBD</span>
+        </div>
+        <div class="spec-item placeholder">
+          <span class="spec-label">Enclosure</span>
+          <span class="spec-value">TBD</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── APIs & data ────────────────────────────────────────────── -->
+    <section class="section">
+      <h2>APIs &amp; data</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis aute
+        irure dolor in reprehenderit — [ describe how arrival data is
+        fetched and refreshed ].
+      </p>
+      <div class="spec-grid">
+        <div class="spec-item placeholder">
+          <span class="spec-label">Transit API</span>
+          <span class="spec-value">TBD</span>
+        </div>
+        <div class="spec-item placeholder">
+          <span class="spec-label">Refresh rate</span>
+          <span class="spec-value">TBD</span>
+        </div>
+        <div class="spec-item placeholder">
+          <span class="spec-label">Routes tracked</span>
+          <span class="spec-value">TBD</span>
+        </div>
+        <div class="spec-item placeholder">
+          <span class="spec-label">Language</span>
+          <span class="spec-value">TBD</span>
+        </div>
+      </div>
+    </section>
+
+    <a class="code-cta" href="https://github.com/C-Short" target="_blank" rel="noopener">
+      View code on GitHub ↗
+    </a>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>Built with [ hardware &amp; software TBD ].</p>
+    <div class="links">
+      <a href="../index.html">All projects</a>
+      <a href="https://github.com/C-Short" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

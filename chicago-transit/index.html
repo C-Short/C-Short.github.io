@@ -53,11 +53,19 @@
   .map-cta-preview {
     position: relative;
     aspect-ratio: 16/7;
-    background:
-      radial-gradient(circle at 30% 40%, rgba(62,124,177,0.20), transparent 45%),
-      radial-gradient(circle at 55% 55%, rgba(46,160,74,0.16), transparent 42%),
-      radial-gradient(circle at 42% 48%, rgba(217,114,61,0.24), transparent 30%),
-      var(--surface-2);
+    overflow: hidden;
+  }
+
+  .map-cta-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .map-cta:hover .map-cta-preview img {
+    transform: scale(1.02);
   }
 
   .map-cta-body {
@@ -217,7 +225,12 @@
     </header>
 
     <a class="map-cta" href="map.html">
-      <div class="map-cta-preview"></div>
+      <div class="map-cta-preview">
+        <img
+          src="../assets/images/chicago-transit-preview.jpg"
+          alt="Interactive map showing CTA L walksheds and grocery access across Chicago"
+        >
+      </div>
       <div class="map-cta-body">
         <div>
           <h3>Open the interactive map</h3>

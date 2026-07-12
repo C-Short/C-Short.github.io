@@ -170,6 +170,18 @@
     overflow: hidden;
   }
 
+  .stop-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  .stop-placeholder:hover .stop-thumb img {
+    transform: scale(1.02);
+  }
+
   .stop-placeholder {
     position: relative;
     display: block;
@@ -232,11 +244,38 @@
           and food access overlap, and where they don't.
         </p>
         <a class="stop-placeholder" href="chicago-transit/index.html" aria-label="Open Chicago Transit &amp; Grocery Access project">
-          <div class="stop-thumb"></div>
+          <div class="stop-thumb">
+            <img
+              src="assets/images/chicago-transit-preview.jpg"
+              alt="Map showing CTA L walksheds and grocery access across Chicago"
+            >
+          </div>
         </a>
         <div class="stop-meta">
           <span>OSMnx · NetworkX · MapLibre GL</span>
           <span>Citywide, all L lines</span>
+        </div>
+      </div>
+
+      <div class="stop" style="--stop-color: var(--ov)">
+        <span class="stop-route">Line 02 — Active</span>
+        <a class="stop-title" href="train-spotter/index.html">
+          <h3>Train Spotter</h3>
+        </a>
+        <p>
+          A physical e-ink departure board displaying live public transit
+          arrivals — built to sit on a shelf and just work.
+        </p>
+        <a class="stop-placeholder" href="train-spotter/index.html" aria-label="Open Train Spotter project">
+          <div class="stop-thumb">
+            <img
+              src="assets/images/train-spotter-preview.jpg"
+              alt="E-ink display showing live transit departures"
+            >
+          </div>
+        </a>
+        <div class="stop-meta">
+          <span>TBD</span>
         </div>
       </div>
 
